@@ -1,2 +1,9 @@
+# vscode
+.vscode
+
 # Env 
 .env*
+
+# Executables and build artifacts
+bin/
+build/
