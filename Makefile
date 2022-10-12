@@ -3,7 +3,7 @@ BIN_NAME = main
 CXX = gcc
 LD  = gcc
 
-CXXFLAGS = -Wall -Wextra -pedantic -std=c99 -ggdb
+CXXFLAGS = -Wall -Wextra -pedantic -std=c11 -ggdb
 
 SRC_DIR = src
 BIN_DIR = bin
