@@ -15,6 +15,7 @@
 
 // Enums
 // Structs
+//TODO add NCarray struct
 // functions
 
 

@@ -1,3 +1,10 @@
+#TODO: Redo the makefile according to the new structure
+# Should be able to do a make run, make build, make test, make clean (more options could be added) 
+# make build should compile to obj the files in src and put them in build. Then it should link them (those from source) together and put the executable in bin.
+# make test should compile to obj the files in test and put them in build. Then it should link them (those from test) together and put the executable in bin.
+# make run should run either the main in bin or the test in bin
+# make clean should remove all files in build and bin
+
 BIN_NAME = main
 
 CXX = gcc
