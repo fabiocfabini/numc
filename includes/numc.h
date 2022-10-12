@@ -1,11 +1,16 @@
 #ifndef __NUMC_H__
 #define __NUMC_H__
 
-// Definitions
+#ifndef NCDEF
+#define NCDEF
+#endif // NCDEF
+
+// Definitions 
 // Macros
 // Enums
 // Structs
 // functions
+
 
 #ifdef NUMC_IMPLEMENTATION
 // This is the implementation of the library. It is only included if
