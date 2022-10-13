@@ -25,4 +25,35 @@
 
 #endif // NUMC_IMPLEMENTATION
 
+
+// NCarray struct
+// This struct contains
+// - a pointer to the array
+// - the type of the array 
+// - the size of the array (int)
+// - the shape of the array (which is a pointer to an array of ints)
+
+struct numc_array {
+    void* array;
+    char* type;
+    int size;
+    int* shape;
+};
+
+// A function that creates a new NCarray struct
+// It takes a pointer to an array, the type of the array, the size of the array, and the shape of the array
+// It returns a pointer to the new NCarray struct
+struct numc_array* new_numc_array(void* array, char* type, int size, int* shape) {
+    struct numc_array* new_array = malloc(sizeof(struct numc_array));
+    new_array->array = array;
+    new_array->type = type;
+    new_array->size = size;
+    new_array->shape = shape;
+    return new_array;
+}
+
+
+
+
+
 #endif  // __NUMC_H__
