@@ -99,7 +99,7 @@ clean: create-dirs
 	rm -f $(BUILD_DIR)/*.o $(BIN_DIR)/*
 
 create-dirs:
-	mkdir -p $(BIN_DIR) $(BUILD_DIR)
+	@mkdir -p $(BIN_DIR) $(BUILD_DIR)
 
 
 ############################################	
