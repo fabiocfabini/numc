@@ -28,8 +28,8 @@ RUN_BIN=run
 TEST_BIN=test
 
 # Compiler & Flags & Libraries
-CC=gcc
-CFLAGS=-Wall -Wextra -Werror -pedantic -std=c11 -ggdb
+CC=g++
+CFLAGS=-Wall -Wextra -Werror -pedantic -std=c++20 -ggdb
 #LIBS=-lm
 
 # Directories
@@ -37,13 +37,13 @@ BIN_DIR=bin
 SRC_DIR=src
 TEST_DIR=test
 BUILD_DIR=build
-SOURCES=$(shell find $(SRC_DIR) -name '*.c')
+SOURCES=$(shell find $(SRC_DIR) -name '*.cpp')
 
 # Variables
-SRC_FILES=$(wildcard $(SRC_DIR)/*.c)
-TEST_FILES=$(wildcard $(TEST_DIR)/*.c)
-OBJ_SRC_FILES=$(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRC_FILES))
-OBJ_TEST_FILES=$(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/%.o, $(TEST_FILES))
+SRC_FILES=$(wildcard $(SRC_DIR)/*.cpp)
+TEST_FILES=$(wildcard $(TEST_DIR)/*.cpp)
+OBJ_SRC_FILES=$(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRC_FILES))
+OBJ_TEST_FILES=$(patsubst $(TEST_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(TEST_FILES))
 
 # Rules
 .PHONY: bin build src test # This is to make sure that the rules are not files
@@ -52,7 +52,7 @@ OBJ_TEST_FILES=$(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/%.o, $(TEST_FILES))
 ############################################
 # Main program rules #######################
 ############################################
-build:
+build: create-dirs
 	@echo "$(BLUE)Building & Compiling Program:$(NC)"
 	@$(MAKE) --no-print-directory $(BIN_DIR)/$(RUN_BIN)
 	@echo "$(GREEN)Successfully built & compiled program!\n$(NC)"
@@ -60,13 +60,13 @@ build:
 $(BIN_DIR)/$(RUN_BIN): $(OBJ_SRC_FILES)
 	$(CC) $(CFLAGS) $(OBJ_SRC_FILES) -o $(BIN_DIR)/$(RUN_BIN)
 
-$(OBJ_SRC_FILES): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c
+$(OBJ_SRC_FILES): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.cpp
 	$(CC) -c $(CFLAGS) $< -o $@
 
 ############################################
 # Test rules ###############################
 ############################################
-tests:
+tests: create-dirs
 	@echo "$(BLUE)Building & Compiling Tests:$(NC)"
 	@$(MAKE) --no-print-directory $(BIN_DIR)/$(TEST_BIN)
 	@echo "$(GREEN)Successfully built & compiled tests!\n$(NC)"
@@ -74,7 +74,7 @@ tests:
 $(BIN_DIR)/$(TEST_BIN): $(OBJ_TEST_FILES)
 	$(CC) $(CFLAGS) $(OBJ_TEST_FILES) -o $(BIN_DIR)/$(TEST_BIN)
 
-$(OBJ_TEST_FILES): $(BUILD_DIR)/%.o : $(TEST_DIR)/%.c
+$(OBJ_TEST_FILES): $(BUILD_DIR)/%.o : $(TEST_DIR)/%.cpp
 	$(CC) -c $(CFLAGS) $< -o $@
 
 
