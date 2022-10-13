@@ -7,10 +7,15 @@ int main(){
     int passed = 0;
     int failed = 0;
 
-    printf("[INFO] STARTED TESTS\n");
+    if(total == 0){
+        printf("No tests to run.\n");
+        return 0;
+    }else{
+        printf("[INFO] STARTED TESTS\n");
 
-    test_typecheck(&total, &passed, &failed);
+        printf("[INFO] REPORT: %d/ %d tests passed (%f%%). Failed %d.\n", passed, total, passed/total * 100.0, failed);
+    }
 
-    printf("[INFO] REPORT: %d/%d tests passed.\n", passed, total);
+    return 0;
 }
 

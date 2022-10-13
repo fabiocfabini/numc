@@ -3,6 +3,4 @@
 
 #include "numc.h"
 
-void test_typecheck(int* total, int* passed, int* failed);
-
 #endif // __TEST_H__
