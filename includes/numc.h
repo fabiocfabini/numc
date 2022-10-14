@@ -13,7 +13,7 @@
 #define typeof(expr) (_Generic((expr), char: "char", char*: "char*", unsigned char: "unsigned char", signed char: "signed char",short: "short", unsigned short: "unsigned short",int: "int", int*: "int*", unsigned int: "unsigned int",long: "long", unsigned long: "unsigned long",long long: "long long", unsigned long long: "unsigned long long",float: "float",double: "double",long double: "long double",void*: "void*", default: "?")) 
 #define ISA(expr, type) (strcmp(typeof(expr), type) == 0)
 
-
+//NOTE: Discuss if having seperate structs for each type is better
 typedef struct nc_array{
     int length;
     void* data;
@@ -55,7 +55,8 @@ NCarray nc_zeros(const char* type, short int ndim, ...);
  * @return NCarray The initialized NCarray
  */
 NCarray nc_ones(const char* type, short int ndim, ...);
-
+//TODO: Implement nc_fill
+//TODO: Implement printing of arrays (could be a Depth First Search)
 
 
 
@@ -77,7 +78,7 @@ NCarray nc_ones(const char* type, short int ndim, ...);
 // - the type of the array 
 // - the size of the array (int)
 // - the shape of the array (which is a pointer to an array of ints)
-
+//NOTE: Talk to Miguel about implementation
 struct numc_array {
     void* array;
     char* type;
