@@ -105,6 +105,16 @@ memcheck-tests: tests
 	@valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(TEST_BIN)
 	@echo "$(GREEN)Program finished!\n$(NC)"
 
+
+############################################
+# Install rules ############################
+############################################
+install:
+	@echo "$(BLUE)Installing dependencies:$(NC)"
+	sudo apt install valgrind
+	@echo "$(GREEN)Done!\n$(NC)"
+
+
 ############################################
 # Clean rules ##############################
 ############################################
@@ -128,4 +138,5 @@ help:
 	@echo "    $(PURPLE)make tests      		$(NC)🎯 Builds and compiles Unit tests."
 	@echo "    $(PURPLE)make memcheck-build      	$(NC)✅ Checks for memory leaks in the main program."
 	@echo "    $(PURPLE)make memcheck-tests      	$(NC)✅ Checks for memory leaks in the test suit."
+	@echo "    $(PURPLE)make install      		$(NC)📦 Installs all the dependencies."
 	@echo "    $(PURPLE)make clean      		$(NC)🧹 Clean up project."
