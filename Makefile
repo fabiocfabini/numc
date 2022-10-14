@@ -29,7 +29,7 @@ TEST_BIN=test
 
 # Compiler & Flags & Libraries
 CC=gcc
-CFLAGS=-Wall -Wextra -Werror -pedantic -std=c11 -ggdb
+CFLAGS=-Wall -Wextra -std=c11 -ggdb
 #LIBS=-lm
 
 # Directories
@@ -93,6 +93,19 @@ test: tests
 
 
 ############################################
+# Memory rules #############################
+############################################
+memcheck-build: build
+	@echo "$(BLUE)Running program with valgrind:$(NC)"
+	@valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(RUN_BIN)
+	@echo "$(GREEN)Program finished!\n$(NC)"
+
+memcheck-tests: tests
+	@echo "$(BLUE)Running program with valgrind:$(NC)"
+	@valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(TEST_BIN)
+	@echo "$(GREEN)Program finished!\n$(NC)"
+
+############################################
 # Clean rules ##############################
 ############################################
 clean: create-dirs
@@ -109,8 +122,10 @@ help:
 	@echo "$(BLUE)Makefile for the project:$(NC)"
 	@echo " "
 	@echo "$(CYAN)Usage:"
-	@echo "    $(PURPLE)make run       	$(NC)🏃 Runs the program and compiles it if it's not already compiled."
-	@echo "    $(PURPLE)make test       	$(NC)🏃 Runs the tests and compiles them if they're not already compiled."
-	@echo "    $(PURPLE)make build      	$(NC)⚙️  Builds and compiles the main program."
-	@echo "    $(PURPLE)make tests      	$(NC)🎯 Builds and compiles Unit tests."
-	@echo "    $(PURPLE)make clean      	$(NC)🧹 Clean up project."
+	@echo "    $(PURPLE)make run       		$(NC)🏃 Runs the program and compiles it if it's not already compiled."
+	@echo "    $(PURPLE)make test       		$(NC)🏃 Runs the tests and compiles them if they're not already compiled."
+	@echo "    $(PURPLE)make build      		$(NC)⚙️  Builds and compiles the main program."
+	@echo "    $(PURPLE)make tests      		$(NC)🎯 Builds and compiles Unit tests."
+	@echo "    $(PURPLE)make memcheck-build      	$(NC)✅ Checks for memory leaks in the main program."
+	@echo "    $(PURPLE)make memcheck-tests      	$(NC)✅ Checks for memory leaks in the test suit."
+	@echo "    $(PURPLE)make clean      		$(NC)🧹 Clean up project."
