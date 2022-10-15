@@ -7,16 +7,28 @@
 
 void nc_free_array(NCarray arr){
     assert(arr != NULL && "NCarray to free is NULL");
-    if(arr->data != NULL) free(arr->data);
-    if(arr->shape != NULL) free(arr->shape);
+    if(arr->shape != NULL){
+        free(arr->shape);
+    }
     free(arr);
     nc_count--;
 }
 
 void nc_collect(){
-    int total = nc_count;
-    for (int i = 0; i < total && NC_TABLE[i] != 0; i++)
-        nc_free_array(NC_TABLE[i]);
+    int total = data_count;
+    for(int i = 0; i < total; i++){
+        free(DATA_TABLE[i]);
+        data_count--;
+    }
+
+    total = nc_count;
+    for (int i = 0; i < total && NC_TABLE[i] != 0; i++){
+        if(NC_TABLE[i]->shape != NULL){
+            free(NC_TABLE[i]->shape);
+        }
+        free(NC_TABLE[i]);
+        nc_count--;
+    }
 }
 
 NCarray nc_init_array(){
@@ -34,26 +46,35 @@ NCarray nc_init_array(){
     return arr;
 }
 
-void nc_show_rec(NCarray arr, int depth, int* offset){
+void nc_show_rec(NCarray arr, int depth, int* offset, int width, int precision){
     if(depth == arr->ndim-1){ // We reached the final dimension. It's time to print a column.
         putchar('[');
         if(strcmp(arr->type, "i32") == 0){
-            int* data = ((int*)arr->data);
+            int* data = ((int*) arr->data);
             for (int i = 0; i < arr->shape[depth]; i++){
                 if(i == arr->shape[depth]-1){
-                    printf("%d", data[*offset + i]);
+                    printf("%10d", data[*offset + i]);
                     continue;
                 }
                 if(i == 0){
-                    printf("%d, ", data[*offset + i]);
+                    printf("%10d, ", data[*offset + i]);
                     continue;
                 }
-                printf("%d, ", data[*offset + i]);
+                printf("%10d, ", data[*offset + i]);
             }
         }else if(strcmp(arr->type, "f32") == 0){
-            float* data = ((float*)arr->data);
-            for (int i = 0; i < arr->shape[depth]; i++)
-                printf("%-5f ", data[*offset + i]);
+            float* data = ((float*) arr->data);
+            for (int i = 0; i < arr->shape[depth]; i++) {
+                if(i == arr->shape[depth]-1){
+                    printf(FFMT, width, precision, data[*offset + i]);
+                    continue;
+                }
+                if(i == 0){
+                    printf(FFMT", ", width, precision, data[*offset + i]);
+                    continue;
+                }
+                printf(FFMT", ", width, precision, data[*offset + i]);
+            }
         }else{
             fprintf(stderr, "Error in nc_show_rec: type %s is not supported!\n", arr->type);
             goto error;
@@ -83,7 +104,7 @@ void nc_show_rec(NCarray arr, int depth, int* offset){
     }else{ // We are not in the final dimension. We need to call the function again.
         for(int i = 0; i < arr->shape[depth]; i++){
             if (*offset == 0) putchar('[');
-            nc_show_rec(arr, depth+1, offset);
+            nc_show_rec(arr, depth+1, offset, width, precision);
         }
     }
     return; // We are done here. Return to the previous call.
@@ -93,10 +114,10 @@ void nc_show_rec(NCarray arr, int depth, int* offset){
         exit(EXIT_FAILURE);
 }
 
-void nc_show(NCarray arr){
+void nc_show(NCarray arr, int width, int precision){
     int depth = 0;
     int offset = 0;
     printf("NCarray(");
-    nc_show_rec(arr, depth, &offset);
-    printf(", type=%s)\n", arr->type);
+    nc_show_rec(arr, depth, &offset, width, precision);
+    printf(", type=%s)\n\n", arr->type);
 }
