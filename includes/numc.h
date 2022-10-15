@@ -87,7 +87,16 @@ NCarray nc_ones(const char* type, int ndim, ...);
 //TODO: Implement nc_fill
 //TODO: Implement printing: Update missing table formatting
 
-
+/**
+ * @brief Creates an NCarray with evenly spaced values between start and stop
+ * 
+ * @param type The type of the array
+ * @param start The start value
+ * @param stop The stop value
+ * @param step The step size
+ * @return NCarray ranging [start, stop, step]
+ */
+NCarray nc_arange(const char* type, int start, int stop, int step);
 
 
 

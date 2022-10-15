@@ -100,3 +100,43 @@ error:
     nc_collect();
     exit(EXIT_FAILURE);
 }
+
+NCarray nc_arange(const char* type, int start, int stop, int step){
+    //Init memory for the NCarray
+    NCarray arr = nc_init_array();
+    if(arr == NULL){
+        fprintf(stderr, "Error in nc_arange: Could not allocate memory for NCarray!\n");
+        return NULL;
+    }
+
+    //Set the type of the struct
+    strncpy(arr->type, type, MAX_TYPE_LEN);
+
+    //Set the length and shape of the array
+    arr->ndim = 1;
+    arr->length = (stop - start) / step;
+    arr->shape = (int*) malloc(sizeof(int) * arr->ndim);
+    arr->shape[0] = arr->length;
+
+    //Set all the values to 0
+    if(strcmp(type, "i32") == 0){
+        arr->data = (int*) malloc(sizeof(int) * arr->length);
+        for(int i = 0; i < arr->length; i++){
+            ((int*)arr->data)[i] = start + i * step;
+        }
+    }else if(strcmp(type, "f32") == 0){
+        arr->data = (float*) malloc(sizeof(float) * arr->length);
+        for(int i = 0; i < arr->length; i++){
+            ((float*)arr->data)[i] = (float)start + (float)i * (float)step;
+        }
+    }else{
+        fprintf(stderr, "Error in nc_arange: type %s is not supported!\n", type);
+        goto error;
+    }
+
+    return arr;
+
+    error:
+        nc_collect();
+        exit(EXIT_FAILURE);
+}
