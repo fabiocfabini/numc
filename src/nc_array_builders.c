@@ -2,28 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <assert.h>
 #include "../includes/numc.h"
 
-void nc_free_array(NCarray arr){
-    assert(arr != NULL && "NCarray to free is NULL");
-    if(arr->data != NULL) free(arr->data);
-    if(arr->shape != NULL) free(arr->shape);
-    free(arr);
-}
 
-NCarray nc_init_array(){
-    NCarray arr = malloc(sizeof(struct nc_array));
-    if(arr == NULL) return NULL;
-    arr->length = 0;
-    arr->data = NULL;
-    arr->ndim = 0;
-    arr->shape = NULL;
-    arr->type[0] = '\0';
-    return arr;
-}
-
-NCarray nc_zeros(const char* type, short int ndim, ...){
+NCarray nc_zeros(const char* type, int ndim, ...){
     //Init memory for the NCarray
     NCarray arr = nc_init_array();
     if(arr == NULL){
@@ -45,7 +27,7 @@ NCarray nc_zeros(const char* type, short int ndim, ...){
     arr->ndim = ndim;
     arr->length = 1;
 
-    arr->shape = (short int*) malloc(sizeof(short int) * arr->ndim);
+    arr->shape = (int*) malloc(sizeof(int) * arr->ndim);
     for(short int i = 0; i < arr->ndim; i++){
         arr->shape[i] = va_arg(args, int);
         arr->length *= arr->shape[i];
@@ -64,11 +46,11 @@ NCarray nc_zeros(const char* type, short int ndim, ...){
     return arr;
 
 error:
-    nc_free_array(arr);
+    nc_collect();
     exit(EXIT_FAILURE);
 }
 
-NCarray nc_ones(const char* type, short int ndim, ...){
+NCarray nc_ones(const char* type, int ndim, ...){
     //Init memory for the NCarray
     NCarray arr = nc_init_array();
     if(arr == NULL){
@@ -90,7 +72,7 @@ NCarray nc_ones(const char* type, short int ndim, ...){
     arr->ndim = ndim;
     arr->length = 1;
 
-    arr->shape = (short int*) malloc(sizeof(short int) * arr->ndim);
+    arr->shape = (int*) malloc(sizeof(int) * arr->ndim);
     for(short int i = 0; i < arr->ndim; i++){
         arr->shape[i] = va_arg(args, int);
         arr->length *= arr->shape[i];
@@ -115,6 +97,6 @@ NCarray nc_ones(const char* type, short int ndim, ...){
     return arr;
 
 error:
-    nc_free_array(arr);
+    nc_collect();
     exit(EXIT_FAILURE);
 }
