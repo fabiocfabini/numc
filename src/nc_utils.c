@@ -15,7 +15,7 @@ void nc_free_array(NCarray arr){
 
 void nc_collect(){
     int total = nc_count;
-    for (size_t i = 0; i < total && NC_TABLE[i] != 0; i++)
+    for (int i = 0; i < total && NC_TABLE[i] != 0; i++)
         nc_free_array(NC_TABLE[i]);
 }
 
@@ -32,49 +32,6 @@ NCarray nc_init_array(){
 
     NC_TABLE[nc_count++] = arr;
     return arr;
-}
-
-int nc_equal(NCarray arr1, NCarray arr2){
-    int equal = 1;
-
-    // Check for valid arrays
-    if(arr1 == NULL || arr2 == NULL){
-        fprintf(stderr, "Error in nc_equal: One of the arrays is NULL! &arr1 = %p, &arr2 = %p\n", arr1, arr2);
-        goto error;
-    }
-
-    // Check for equal length
-    if(arr1->length != arr2->length){
-        fprintf(stderr, "Could not compare arrays due to unequal length (%d != %d)", arr1->length, arr2->length);
-        goto error;
-    }
-
-    // Check for equal type
-    if(strcmp(arr1->type, arr2->type) != 0){
-        fprintf(stderr, "Could not compare arrays due to unequal type (%s != %s)", arr1->type, arr2->type);
-        goto error;
-    }
-
-    // Check for equal shapes
-    if(arr1->ndim != arr2->ndim || memcmp(arr1->shape, arr2->shape, arr1->ndim * sizeof(short int)) != 0){
-        fprintf(stderr, "Could not compare arrays due to unequal dimensions (%d != %d)", arr1->ndim, arr2->ndim);
-        goto error;
-    }
-
-    // Check for equal data
-    if(strcmp(arr1->type, "i32") == 0){
-        if(memcmp(arr1->data, arr2->data, arr1->length * sizeof(float)) != 0) equal = 0;
-    }else if(strcmp(arr1->type, "f32") == 0){
-        if(memcmp(arr1->data, arr2->data, arr1->length * sizeof(float)) != 0) equal = 0;
-    }else{
-        fprintf(stderr, "Error in nc_cmp: type %s is not supported!\n", arr1->type);
-        goto error;
-    }
-    return equal;
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }
 
 void nc_show_rec(NCarray arr, int depth, int* offset){
@@ -139,7 +96,7 @@ void nc_show_rec(NCarray arr, int depth, int* offset){
 void nc_show(NCarray arr){
     int depth = 0;
     int offset = 0;
-    printf("\nNCarray(");
+    printf("NCarray(");
     nc_show_rec(arr, depth, &offset);
     printf(", type=%s)\n", arr->type);
 }
