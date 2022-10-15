@@ -85,7 +85,7 @@ NCarray nc_zeros(const char* type, int ndim, ...);
  */
 NCarray nc_ones(const char* type, int ndim, ...);
 //TODO: Implement nc_fill
-//TODO: Implement printing of arrays (could be a Depth First Search)
+//TODO: Implement printing: Update missing table formatting
 
 
 
