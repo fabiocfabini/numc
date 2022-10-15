@@ -10,22 +10,26 @@
 
 #define MAX_TYPE_LEN 5
 #define NC_TABLE_CAP 10
-#define FFMT(col, precision) "%-" #col "." #precision "f"
+
+#define FFMT "%*.*f"
 
 #define typeof(expr) (_Generic((expr), char: "char", char*: "char*", unsigned char: "unsigned char", signed char: "signed char",short: "short", unsigned short: "unsigned short",int: "int", int*: "int*", unsigned int: "unsigned int",long: "long", unsigned long: "unsigned long",long long: "long long", unsigned long long: "unsigned long long",float: "float",double: "double",long double: "long double",void*: "void*", default: "?")) 
 #define ISA(expr, type) (strcmp(typeof(expr), type) == 0)
 
 //NOTE: Discuss if having seperate structs for each type is better
 typedef struct nc_array{
-    int length;
     void* data;
+    int length;
+    // void* data;
     int ndim;
     int* shape;
     char type[MAX_TYPE_LEN];
 } *NCarray;
 
 extern size_t nc_count;
+extern size_t data_count;
 extern NCarray NC_TABLE[NC_TABLE_CAP];
+extern void* DATA_TABLE[NC_TABLE_CAP];
 
 /**
  * @brief Frees the memory allocated for an NCarray
@@ -62,8 +66,10 @@ int nc_equal(NCarray arr1, NCarray arr2);
  * @brief Prints an NCarray to stdout
  * 
  * @param arr The NCarray to print
+ * @param width The width of each column
+ * @param precision The precision of each element
  */
-void nc_show(NCarray arr);
+void nc_show(NCarray arr, int width, int precision);
 
 /**
  * @brief Creates an NCarray with all values set to 0
@@ -85,7 +91,6 @@ NCarray nc_zeros(const char* type, int ndim, ...);
  */
 NCarray nc_ones(const char* type, int ndim, ...);
 //TODO: Implement nc_fill
-//TODO: Implement printing: Update missing table formatting
 
 /**
  * @brief Creates an NCarray with evenly spaced values between start and stop
@@ -97,6 +102,16 @@ NCarray nc_ones(const char* type, int ndim, ...);
  * @return NCarray ranging [start, stop, step]
  */
 NCarray nc_arange(const char* type, int start, int stop, int step);
+
+/**
+ * @brief Reshapes an NCarray maintaining the same data
+ * 
+ * @param arr The NCarray to reshape
+ * @param new_shape_dim The new number of dimensions
+ * @param ... The new size of each dimension. Must be ndim arguments
+ * @return The reshaped NCarray.
+ */
+NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...);
 
 
 
