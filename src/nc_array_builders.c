@@ -142,6 +142,57 @@ NCarray nc_arange(const char* type, int start, int stop, int step){
         exit(EXIT_FAILURE);
 }
 
+NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
+    //Init memory for the NCarray
+    NCarray arr = nc_init_array();
+    if(arr == NULL){
+        fprintf(stderr, "Error in nc_fill: Could not allocate new NCarray!\n");
+        goto error;
+    }
+
+    //Set the type of the struct
+    strncpy(arr->type, type, MAX_TYPE_LEN);
+
+    //Set the length and shape of the array
+    va_list args;
+    va_start(args, ndim);
+
+    if(ndim <= 0){
+        fprintf(stderr, "Error in nc_fill: ndim must be greater than 0!\n");
+        goto error;
+    }
+    arr->ndim = ndim;
+    arr->length = 1;
+
+    arr->shape = (int*) malloc(sizeof(int) * arr->ndim);
+    for(short int i = 0; i < arr->ndim; i++){
+        arr->shape[i] = va_arg(args, int);
+        arr->length *= arr->shape[i];
+    }
+
+    //Set all the values to 0
+    if(strcmp(type, "i32") == 0){
+        arr->data = (int*) malloc(sizeof(int) * arr->length);
+        for(int i = 0; i < arr->length; i++){
+            ((int*) arr->data)[i] = *((int*) fill_value);
+        }
+    }else if(strcmp(type, "f32") == 0){
+        arr->data = (float*) malloc(sizeof(float) * arr->length);
+        for(int i = 0; i < arr->length; i++){
+            ((float*) arr->data)[i] = *((float*) fill_value);
+        }
+    }else{
+        fprintf(stderr, "Error in nc_fill: type %s is not supported!\n", type);
+        goto error;
+    }DATA_TABLE[data_count++] = arr->data;
+
+    return arr;
+
+    error:
+        nc_collect();
+        exit(EXIT_FAILURE);
+}
+
 NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...){ 
     // Check for valid input array
     if(arr == NULL){

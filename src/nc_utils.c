@@ -53,14 +53,14 @@ void nc_show_rec(NCarray arr, int depth, int* offset, int width, int precision){
             int* data = ((int*) arr->data);
             for (int i = 0; i < arr->shape[depth]; i++){
                 if(i == arr->shape[depth]-1){
-                    printf("%10d", data[*offset + i]);
+                    printf("%*d", width, data[*offset + i]);
                     continue;
                 }
                 if(i == 0){
-                    printf("%10d, ", data[*offset + i]);
+                    printf("%*d, ", width, data[*offset + i]);
                     continue;
                 }
-                printf("%10d, ", data[*offset + i]);
+                printf("%*d, ", width, data[*offset + i]);
             }
         }else if(strcmp(arr->type, "f32") == 0){
             float* data = ((float*) arr->data);

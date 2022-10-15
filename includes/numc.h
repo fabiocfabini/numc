@@ -69,10 +69,10 @@ int nc_equal(NCarray arr1, NCarray arr2);
  * @param width The width of each column
  * @param precision The precision of each element
  */
-void nc_show(NCarray arr, int width, int precision);
+void nc_show(NCarray arr, int width, int precision); //TODO: Make formatting adjust automatically (without width)
 
 /**
- * @brief Creates an NCarray with all values set to 0
+ * @brief Creates an NCarray with a given shape and type and fills it with 0s
  * 
  * @param type The type of the array
  * @param ndim The number of dimensions of the array
@@ -82,7 +82,7 @@ void nc_show(NCarray arr, int width, int precision);
 NCarray nc_zeros(const char* type, int ndim, ...);
 
 /**
- * @brief Creates an NCarray with all values set to 1
+ * @brief Creates an NCarray with a given shape and type and fills it with 1s
  * 
  * @param type The type of the array
  * @param ndim The number of dimensions of the array
@@ -90,7 +90,17 @@ NCarray nc_zeros(const char* type, int ndim, ...);
  * @return NCarray The initialized NCarray
  */
 NCarray nc_ones(const char* type, int ndim, ...);
-//TODO: Implement nc_fill
+
+/**
+ * @brief Creates an NCarray with a given shape and type and fills it with the `fill_value`
+ * 
+ * @param type The type of the array
+ * @param fill_value The value to fill the array with
+ * @param ndim The number of dimensions of the array
+ * @param ... The size of each dimension. Must be ndim arguments
+ * @return The initialized NCarray
+ */
+NCarray nc_fill(const char* type, void* fill_value, int ndim, ...);
 
 /**
  * @brief Creates an NCarray with evenly spaced values between start and stop
