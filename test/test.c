@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "../includes/test.h"
 
+// TODO: Create a save and load function in order to facilitate the testing of the library
 //NOTE: Testing system could probably be improved by using a testing framework or by using Python to run the tests
 int main(){
     int total = 0;
