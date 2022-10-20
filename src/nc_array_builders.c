@@ -250,3 +250,45 @@ NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...){
         nc_collect();
         exit(EXIT_FAILURE);
 }
+
+NCarray nc_copy(NCarray src){
+    // Check for valid input array
+    if(src == NULL){
+        fprintf(stderr, "Error in nc_copy: The input array is NULL!\n");
+        goto error;
+    }
+    //Init memory for the NCarray
+    NCarray dst = nc_init_array();
+    if(dst == NULL){
+        fprintf(stderr, "Error in nc_copy: Could not allocate new NCarray!\n");
+        goto error;
+    }strncpy(dst->type, src->type, MAX_TYPE_LEN);
+
+    // Set the new length and shape
+    dst->ndim = src->ndim;
+    dst->length = src->length;
+    dst->shape = (int*) malloc(sizeof(int) * dst->ndim);
+    for(int i = 0; i < dst->ndim; i++){
+        dst->shape[i] = src->shape[i];
+    }
+
+    // Set the new data
+    if(strcmp(dst->type, "i32") == 0){
+        dst->data = (int*) malloc(sizeof(int) * dst->length);
+        // use memcpy to copy the data
+        memcpy(dst->data, src->data, sizeof(int) * dst->length);
+    }else if(strcmp(dst->type, "f32") == 0){
+        dst->data = (float*) malloc(sizeof(float) * dst->length);
+        // use memcpy to copy the data
+        memcpy(dst->data, src->data, sizeof(float) * dst->length);
+    }else{
+        fprintf(stderr, "Error in nc_copy: type %s is not supported!\n", dst->type);
+        goto error;
+    }DATA_TABLE[data_count++] = dst->data;
+
+    return dst;
+
+    error:
+        nc_collect();
+        exit(EXIT_FAILURE);
+}

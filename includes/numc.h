@@ -123,6 +123,14 @@ NCarray nc_arange(const char* type, int start, int stop, int step);
  */
 NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...);
 
+/**
+ * @brief Copies an NCarray
+ * 
+ * @param src The NCarray to copy
+ * @return The copied NCarray
+ */
+NCarray nc_copy(NCarray src);
+
 
 
 
