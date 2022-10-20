@@ -34,9 +34,9 @@ NCarray nc_zeros(const char* type, int ndim, ...){
     }
 
     //Set all the values to 0
-    if(strcmp(type, "i32") == 0){
+    if(strcmp(type, NC_INT) == 0){
         arr->data = (int*) calloc(arr->length, sizeof(int));
-    }else if(strcmp(type, "f32") == 0){
+    }else if(strcmp(type, NC_FLOAT) == 0){
         arr->data = (float*) calloc(arr->length, sizeof(float));
     }else{
         fprintf(stderr, "Error in nc_zeros: type %s is not supported!\n", type);
@@ -80,12 +80,12 @@ NCarray nc_ones(const char* type, int ndim, ...){
     }
 
     //Set all the values to 1
-    if(strcmp(type, "i32") == 0){
+    if(strcmp(type, NC_INT) == 0){
         arr->data = (int*) calloc(arr->length, sizeof(int));
         for(int i = 0; i < arr->length; i++){
             ((int*) arr->data)[i] = 1;
         }
-    }else if(strcmp(type, "f32") == 0){
+    }else if(strcmp(type, NC_FLOAT) == 0){
         arr->data = (float*) calloc(arr->length, sizeof(float));
         for(int i = 0; i < arr->length; i++){
             ((float*) arr->data)[i] = 1;
@@ -120,12 +120,12 @@ NCarray nc_arange(const char* type, int start, int stop, int step){
     arr->shape[0] = arr->length;
 
     //Set all the values to 0
-    if(strcmp(type, "i32") == 0){
+    if(strcmp(type, NC_INT) == 0){
         arr->data = (int*) malloc(sizeof(int) * arr->length);
         for(int i = 0; i < arr->length; i++){
             ((int*) arr->data)[i] = start + i * step;
         }
-    }else if(strcmp(type, "f32") == 0){
+    }else if(strcmp(type, NC_FLOAT) == 0){
          arr->data = (float*) malloc(sizeof(float) * arr->length);
         for(int i = 0; i < arr->length; i++){
             ((float*) arr->data)[i] = (float)start + (float)i * (float)step;
@@ -171,12 +171,12 @@ NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
     }
 
     //Set all the values to 0
-    if(strcmp(type, "i32") == 0){
+    if(strcmp(type, NC_INT) == 0){
         arr->data = (int*) malloc(sizeof(int) * arr->length);
         for(int i = 0; i < arr->length; i++){
             ((int*) arr->data)[i] = *((int*) fill_value);
         }
-    }else if(strcmp(type, "f32") == 0){
+    }else if(strcmp(type, NC_FLOAT) == 0){
         arr->data = (float*) malloc(sizeof(float) * arr->length);
         for(int i = 0; i < arr->length; i++){
             ((float*) arr->data)[i] = *((float*) fill_value);
@@ -273,11 +273,11 @@ NCarray nc_copy(NCarray src){
     }
 
     // Set the new data
-    if(strcmp(dst->type, "i32") == 0){
+    if(strcmp(dst->type, NC_INT) == 0){
         dst->data = (int*) malloc(sizeof(int) * dst->length);
         // use memcpy to copy the data
         memcpy(dst->data, src->data, sizeof(int) * dst->length);
-    }else if(strcmp(dst->type, "f32") == 0){
+    }else if(strcmp(dst->type, NC_FLOAT) == 0){
         dst->data = (float*) malloc(sizeof(float) * dst->length);
         // use memcpy to copy the data
         memcpy(dst->data, src->data, sizeof(float) * dst->length);
