@@ -43,7 +43,7 @@ void nc_collect(){
 }
 
 NCarray nc_init_array(){
-    assert(nc_count < NC_TABLE_CAP && "NCarray table is full");
+    assert(nc_count < MAX_ARRAYS && "NCarray table is full");
 
     NCarray arr = malloc(sizeof(struct nc_array));
     if(arr == NULL) return NULL;
