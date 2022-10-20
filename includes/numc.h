@@ -19,13 +19,23 @@
 //NOTE: Discuss if having seperate structs for each type is better
 typedef struct nc_array{
     void* data;
-    int length;
-    // void* data;
-    int ndim;
-    int* shape;
+    int length, ndim;
+    int *shape;
     char type[MAX_TYPE_LEN];
 } *NCarray;
 
+//NOTE: Thougths on freeing the memory allocated for the array?
+/*
+The optimal way to free the memory allocated for the nc_arrays is to have them in a hash table and free them when the program exits.
+The hash table would allow or users to free the memory allocated for the arrays manually if they want to and still call nc_collect()
+at the end of the program to free the memory allocated for the arrays that were not freed manually.
+This would require each struct to have certain identifiers that would allow the hash table to find the struct in the table.
+Maybe an array of random characters that are generated when the struct is created and are used to find the struct in the hash table.
+How would this work for NCarrays that share the same data? Maybe having 2 hash tables, one for the data and one for the structs?
+
+An easier way to free the memory would be to store the pointers to the data in a linked list and free them when the program exits.
+This option is not as good as the previous one because it would not allow the user to free the memory allocated for the arrays manually.
+*/
 extern size_t nc_count;
 extern size_t data_count;
 extern NCarray NC_TABLE[NC_TABLE_CAP];
@@ -39,10 +49,8 @@ extern void* DATA_TABLE[NC_TABLE_CAP];
 void nc_free_array(NCarray arr);
 
 /**
- * @brief Frees the memory allocated for all NCarrays
- *      Calling this function is optional, as the memory will be freed
- *     when the program exits.
- *
+ * @brief Frees the memory allocated for all NCarrays.
+ *      Calling this function is optional but it is recommended to call it at the end of the program.
  */
 void nc_collect();
 
@@ -62,6 +70,8 @@ NCarray nc_init_array();
  */
 int nc_equal(NCarray arr1, NCarray arr2);
 
+//TODO: Make formatting adjust automatically (without width)
+//IDEA: Printing big arrays should be done in a different way. By default, only the first and last x elements should be printed
 /**
  * @brief Prints an NCarray to stdout
  * 
@@ -69,7 +79,7 @@ int nc_equal(NCarray arr1, NCarray arr2);
  * @param width The width of each column
  * @param precision The precision of each element
  */
-void nc_show(NCarray arr, int width, int precision); //TODO: Make formatting adjust automatically (without width)
+void nc_show(NCarray arr, int width, int precision);
 
 /**
  * @brief Creates an NCarray with a given shape and type and fills it with 0s
@@ -156,36 +166,5 @@ NCarray nc_load(const char* filename);
 // NUMC_IMPLEMENTATION is defined before including the header.
 
 #endif // NUMC_IMPLEMENTATION
-
-
-// NCarray struct
-// This struct contains
-// - a pointer to the array
-// - the type of the array 
-// - the size of the array (int)
-// - the shape of the array (which is a pointer to an array of ints)
-//NOTE: Talk to Miguel about implementation
-// struct numc_array {
-//     void* array;
-//     char* type;
-//     int size;
-//     int* shape;
-// };
-
-// // A function that creates a new NCarray struct
-// // It takes a pointer to an array, the type of the array, the size of the array, and the shape of the array
-// // It returns a pointer to the new NCarray struct
-// struct numc_array* new_numc_array(void* array, char* type, int size, int* shape) {
-//     struct numc_array* new_array = malloc(sizeof(struct numc_array));
-//     new_array->array = array;
-//     new_array->type = type;
-//     new_array->size = size;
-//     new_array->shape = shape;
-//     return new_array;
-// }
-
-
-
-
 
 #endif  // __NUMC_H__
