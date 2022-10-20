@@ -14,6 +14,17 @@ void nc_free_array(NCarray arr){
     nc_count--;
 }
 
+int nc_sizeof(const char* type){
+    if(strcmp(type, "i32") == 0){
+        return sizeof(int);
+    }else if(strcmp(type, "f32") == 0){
+        return sizeof(float);
+    }else{
+        fprintf(stderr, "Error in nc_sizeof: type %s is not supported!\n", type);
+        exit(EXIT_FAILURE);
+    }
+}
+
 void nc_collect(){
     int total = data_count;
     for(int i = 0; i < total; i++){
