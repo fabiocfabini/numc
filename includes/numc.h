@@ -131,6 +131,21 @@ NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...);
  */
 NCarray nc_copy(NCarray src);
 
+/**
+ * @brief Saves an NCarray to a file
+ * 
+ * @param arr The NCarray to save
+ * @param filename The name or path of the file to save to
+ */
+void nc_save(NCarray arr, const char* filename);
+
+/**
+ * @brief Loads an NCarray from a file
+ * 
+ * @param filename The name or path of the file to load from
+ * @return The loaded NCarray
+ */
+NCarray nc_load(const char* filename);
 
 
 

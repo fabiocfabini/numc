@@ -132,3 +132,61 @@ void nc_show(NCarray arr, int width, int precision){
     nc_show_rec(arr, depth, &offset, width, precision);
     printf(", type=%s)\n\n", arr->type);
 }
+
+void nc_save(NCarray arr, const char* filename){
+    FILE* file = fopen(filename, "wb");
+    if(file == NULL){
+        fprintf(stderr, "Error in nc_save: could not open file %s!\n", filename);
+        goto error;
+    }
+    fwrite(arr->type, sizeof(char), MAX_TYPE_LEN, file);
+    fwrite(&arr->ndim, sizeof(int), 1, file);
+    fwrite(arr->shape, sizeof(int), arr->ndim, file); // Length can be inferred from shape.
+    fwrite(arr->data, nc_sizeof(arr->type), arr->length, file);
+    fclose(file);
+    return;
+
+    error:
+        nc_collect();
+        exit(EXIT_FAILURE);
+}
+
+NCarray nc_load(const char* filename){
+    FILE* file = fopen(filename, "rb");
+    if(file == NULL){
+        fprintf(stderr, "Error in nc_load: could not open file %s!\n", filename);
+        goto error;
+    }
+    NCarray arr = nc_init_array();
+    if(arr == NULL){
+        fprintf(stderr, "Error in nc_load: could not allocate memory for NCarray!\n");
+        goto error;
+    }
+    fread(arr->type, sizeof(char), MAX_TYPE_LEN, file);
+    fread(&arr->ndim, sizeof(int), 1, file);
+    arr->shape = malloc(sizeof(int) * arr->ndim);
+    if(arr->shape == NULL){
+        fprintf(stderr, "Error in nc_load: could not allocate memory for shape!\n");
+        goto error;
+    }
+    fread(arr->shape, sizeof(int), arr->ndim, file);
+    arr->length = 1;
+    for(int i = 0; i < arr->ndim; i++)
+        arr->length *= arr->shape[i];
+    arr->data = malloc(nc_sizeof(arr->type) * arr->length);
+    if(arr->data == NULL){
+        fprintf(stderr, "Error in nc_load: could not allocate memory for data!\n");
+        goto error;
+    }
+    fread(arr->data, nc_sizeof(arr->type), arr->length, file);
+    DATA_TABLE[data_count++] = arr->data;
+    fclose(file);
+    return arr;
+
+    error:
+        // We need to free the memory we allocated before returning in case we failed to allocate memory for the array.
+        if(arr->shape != NULL) free(arr->shape);
+
+        nc_collect();
+        exit(EXIT_FAILURE);
+}
