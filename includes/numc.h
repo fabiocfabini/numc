@@ -9,7 +9,9 @@
 
 
 #define MAX_TYPE_LEN 5
-#define NC_TABLE_CAP 10
+#ifndef MAX_ARRAYS
+#define MAX_ARRAYS 100
+#endif // MAX_ARRAYS
 
 #define NC_INT "i32"
 #define NC_FLOAT "f32"
@@ -27,22 +29,10 @@ typedef struct nc_array{
     char type[MAX_TYPE_LEN];
 } *NCarray;
 
-//NOTE: Thougths on freeing the memory allocated for the array?
-/*
-The optimal way to free the memory allocated for the nc_arrays is to have them in a hash table and free them when the program exits.
-The hash table would allow or users to free the memory allocated for the arrays manually if they want to and still call nc_collect()
-at the end of the program to free the memory allocated for the arrays that were not freed manually.
-This would require each struct to have certain identifiers that would allow the hash table to find the struct in the table.
-Maybe an array of random characters that are generated when the struct is created and are used to find the struct in the hash table.
-How would this work for NCarrays that share the same data? Maybe having 2 hash tables, one for the data and one for the structs?
-
-An easier way to free the memory would be to store the pointers to the data in a linked list and free them when the program exits.
-This option is not as good as the previous one because it would not allow the user to free the memory allocated for the arrays manually.
-*/
 extern size_t nc_count;
 extern size_t data_count;
-extern NCarray NC_TABLE[NC_TABLE_CAP];
-extern void* DATA_TABLE[NC_TABLE_CAP];
+extern NCarray NC_TABLE[MAX_ARRAYS];
+extern void* DATA_TABLE[MAX_ARRAYS];
 
 /**
  * @brief Frees the memory allocated for an NCarray
