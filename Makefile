@@ -29,7 +29,7 @@ TEST_BIN=test
 
 # Compiler & Flags & Libraries
 CC=gcc
-CFLAGS=-Wall -Wextra -std=c11 -ggdb
+CFLAGS=-Wall -Wextra -std=c11 -ggdb -pedantic
 #LIBS=-lm
 
 # Directories
@@ -37,7 +37,6 @@ BIN_DIR=bin
 SRC_DIR=src
 TEST_DIR=test
 BUILD_DIR=build
-SOURCES=$(shell find $(SRC_DIR) -name '*.c')
 
 # Variables
 SRC_FILES=$(wildcard $(SRC_DIR)/*.c)
@@ -54,11 +53,15 @@ OBJ_TEST_FILES=$(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/%.o, $(TEST_FILES))
 ############################################
 build:
 	@echo "$(BLUE)Building & Compiling Program:$(NC)"
+	@$(MAKE) --no-print-directory _build_source
 	@$(MAKE) --no-print-directory $(BIN_DIR)/$(RUN_BIN)
 	@echo "$(GREEN)Successfully built & compiled program!\n$(NC)"
 
+_build_source:
+	$(CC) -c $(CFLAGS) main.c -o $(BUILD_DIR)/main.o
+
 $(BIN_DIR)/$(RUN_BIN): $(OBJ_SRC_FILES)
-	$(CC) $(CFLAGS) $(OBJ_SRC_FILES) -o $(BIN_DIR)/$(RUN_BIN)
+	$(CC) $(CFLAGS) $(OBJ_SRC_FILES) $(BUILD_DIR)/main.o -o $(BIN_DIR)/$(RUN_BIN)
 
 $(OBJ_SRC_FILES): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -66,13 +69,17 @@ $(OBJ_SRC_FILES): $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c
 ############################################
 # Test rules ###############################
 ############################################
-tests:
+tests: build
 	@echo "$(BLUE)Building & Compiling Tests:$(NC)"
+	@$(MAKE) --no-print-directory _test_source
 	@$(MAKE) --no-print-directory $(BIN_DIR)/$(TEST_BIN)
 	@echo "$(GREEN)Successfully built & compiled tests!\n$(NC)"
 
+_test_source:
+	$(CC) -c $(CFLAGS) test.c -o $(BUILD_DIR)/test.o
+
 $(BIN_DIR)/$(TEST_BIN): $(OBJ_TEST_FILES)
-	$(CC) $(CFLAGS) $(OBJ_TEST_FILES) -o $(BIN_DIR)/$(TEST_BIN)
+	$(CC) $(CFLAGS) $(OBJ_TEST_FILES) $(OBJ_SRC_FILES) $(BUILD_DIR)/test.o -o $(BIN_DIR)/$(TEST_BIN)
 
 $(OBJ_TEST_FILES): $(BUILD_DIR)/%.o : $(TEST_DIR)/%.c
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -118,10 +125,10 @@ install:
 ############################################
 # Clean rules ##############################
 ############################################
-clean: create-dirs
+clean: _create-dirs
 	rm -f $(BUILD_DIR)/*.o $(BIN_DIR)/*
 
-create-dirs:
+_create-dirs:
 	@mkdir -p $(BIN_DIR) $(BUILD_DIR)
 
 
