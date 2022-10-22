@@ -5,15 +5,6 @@
 #include <assert.h>
 #include "../includes/numc.h"
 
-void nc_free_array(NCarray arr){
-    assert(arr != NULL && "NCarray to free is NULL");
-    if(arr->shape != NULL){
-        free(arr->shape);
-    }
-    free(arr);
-    nc_count--;
-}
-
 int nc_sizeof(const char* type){
     if(strcmp(type, "i32") == 0){
         return sizeof(int);
@@ -23,38 +14,6 @@ int nc_sizeof(const char* type){
         fprintf(stderr, "Error in nc_sizeof: type %s is not supported!\n", type);
         exit(EXIT_FAILURE);
     }
-}
-
-void nc_collect(){
-    int total = data_count;
-    for(int i = 0; i < total; i++){
-        free(DATA_TABLE[i]);
-        data_count--;
-    }
-
-    total = nc_count;
-    for (int i = 0; i < total && NC_TABLE[i] != 0; i++){
-        if(NC_TABLE[i]->shape != NULL){
-            free(NC_TABLE[i]->shape);
-        }
-        free(NC_TABLE[i]);
-        nc_count--;
-    }
-}
-
-NCarray nc_init_array(){
-    assert(nc_count < MAX_ARRAYS && "NCarray table is full");
-
-    NCarray arr = malloc(sizeof(struct nc_array));
-    if(arr == NULL) return NULL;
-    arr->length = 0;
-    arr->data = NULL;
-    arr->ndim = 0;
-    arr->shape = NULL;
-    arr->type[0] = '\0';
-
-    NC_TABLE[nc_count++] = arr;
-    return arr;
 }
 
 void nc_show_rec(NCarray arr, int depth, int* offset, int width, int precision){
@@ -88,7 +47,7 @@ void nc_show_rec(NCarray arr, int depth, int* offset, int width, int precision){
             }
         }else{
             fprintf(stderr, "Error in nc_show_rec: type %s is not supported!\n", arr->type);
-            goto error;
+            exit(EXIT_FAILURE);
         }
         *offset += (int) arr->shape[depth];
         for(int i = 0; i < arr->ndim; i++){
@@ -119,10 +78,6 @@ void nc_show_rec(NCarray arr, int depth, int* offset, int width, int precision){
         }
     }
     return; // We are done here. Return to the previous call.
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }
 
 void nc_show(NCarray arr, int width, int precision){
@@ -137,7 +92,7 @@ void nc_save(NCarray arr, const char* filename){
     FILE* file = fopen(filename, "wb");
     if(file == NULL){
         fprintf(stderr, "Error in nc_save: could not open file %s!\n", filename);
-        goto error;
+        exit(EXIT_FAILURE);
     }
     fwrite(arr->type, sizeof(char), MAX_TYPE_LEN, file);
     fwrite(&arr->ndim, sizeof(int), 1, file);
@@ -145,10 +100,6 @@ void nc_save(NCarray arr, const char* filename){
     fwrite(arr->data, nc_sizeof(arr->type), arr->length, file);
     fclose(file);
     return;
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }
 
 NCarray nc_load(const char* filename){
@@ -179,14 +130,18 @@ NCarray nc_load(const char* filename){
         goto error;
     }
     fread(arr->data, nc_sizeof(arr->type), arr->length, file);
-    DATA_TABLE[data_count++] = arr->data;
     fclose(file);
+
+    TOTAL_ARRAYS_CREATED++;
+    arr->shared = 0;
+    arr->data_idx = pop_from_nc_data();
+    DATA_TABLE[arr->data_idx] = arr->data;
+    data_count++;
     return arr;
 
     error:
         // We need to free the memory we allocated before returning in case we failed to allocate memory for the array.
         if(arr->shape != NULL) free(arr->shape);
 
-        nc_collect();
         exit(EXIT_FAILURE);
 }

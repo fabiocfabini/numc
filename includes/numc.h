@@ -9,9 +9,7 @@
 
 
 #define MAX_TYPE_LEN 5
-#ifndef MAX_ARRAYS
-#define MAX_ARRAYS 100
-#endif // MAX_ARRAYS
+#define MAX_ARRAYS 10
 
 #define NC_INT "i32"
 #define NC_FLOAT "f32"
@@ -23,16 +21,60 @@
 
 //NOTE: Discuss if having seperate structs for each type is better
 typedef struct nc_array{
+    unsigned int shared: 1;
     void* data;
-    int length, ndim;
+    int length, ndim, data_idx, nc_idx;
     int *shape;
     char type[MAX_TYPE_LEN];
 } *NCarray;
 
+typedef struct node{
+    int idx;
+    struct node *next;
+}*Node;
+
+typedef struct list{
+    Node nc_head;
+    Node nc_data;
+}*List;
+
+
+extern int RUNNING;
+extern List GLOBAL_HEAD;
+extern int TOTAL_NC_STRUCTS_CREATED;
+extern int TOTAL_ARRAYS_CREATED;
 extern size_t nc_count;
 extern size_t data_count;
 extern NCarray NC_TABLE[MAX_ARRAYS];
 extern void* DATA_TABLE[MAX_ARRAYS];
+
+/**
+ * @brief Adds a free index of NC_TABLE to the GLOBAL_HEAD list 
+ * 
+ * @param index The free index of NC_TABLE
+ */
+void add_to_nc_head(int index);
+
+/**
+ * @brief Pops a free index of NC_TABLE from the GLOBAL_HEAD list 
+ * 
+ * @return The popped index
+ */
+int pop_from_nc_head();
+
+/**
+ * @brief Adds a free index of DATA_TABLE to the GLOBAL_HEAD list 
+ * 
+ * @param index The free index of DATA_TABLE
+ */
+void add_to_nc_data(int index);
+
+/**
+ * @brief Pops a free index of DATA_TABLE from the GLOBAL_HEAD list 
+ * 
+ * @return The popped index
+ */
+int pop_from_nc_data();
 
 /**
  * @brief Frees the memory allocated for an NCarray

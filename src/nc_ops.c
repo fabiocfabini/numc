@@ -12,25 +12,25 @@ int nc_equal(NCarray arr1, NCarray arr2){
     // Check for valid arrays
     if(arr1 == NULL || arr2 == NULL){
         fprintf(stderr, "Error in nc_equal: One of the arrays is NULL! &arr1 = %p, &arr2 = %p\n", arr1, arr2);
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     // Check for equal length
     if(arr1->length != arr2->length){
         fprintf(stderr, "Could not compare arrays due to unequal length (%d != %d)", arr1->length, arr2->length);
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     // Check for equal type
     if(strcmp(arr1->type, arr2->type) != 0){
         fprintf(stderr, "Could not compare arrays due to unequal type (%s != %s)", arr1->type, arr2->type);
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     // Check for equal shapes
     if(arr1->ndim != arr2->ndim || memcmp(arr1->shape, arr2->shape, arr1->ndim * sizeof(short int)) != 0){
         fprintf(stderr, "Could not compare arrays due to unequal dimensions (%d != %d)", arr1->ndim, arr2->ndim);
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     // Check for equal data
@@ -40,11 +40,7 @@ int nc_equal(NCarray arr1, NCarray arr2){
         if(memcmp(arr1->data, arr2->data, arr1->length * sizeof(float)) != 0) equal = 0;
     }else{
         fprintf(stderr, "Error in nc_cmp: type %s is not supported!\n", arr1->type);
-        goto error;
+        exit(EXIT_FAILURE);
     }
     return equal;
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }

@@ -10,7 +10,7 @@ NCarray nc_zeros(const char* type, int ndim, ...){
     NCarray arr = nc_init_array();
     if(arr == NULL){
         fprintf(stderr, "Error in nc_zeros: Could not allocate memory for NCarray!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     //Set the type of the struct
@@ -22,7 +22,7 @@ NCarray nc_zeros(const char* type, int ndim, ...){
 
     if(ndim <= 0){
         fprintf(stderr, "Error in nc_zeros: ndim must be greater than 0!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
     arr->ndim = ndim;
     arr->length = 1;
@@ -40,15 +40,17 @@ NCarray nc_zeros(const char* type, int ndim, ...){
         arr->data = (float*) calloc(arr->length, sizeof(float));
     }else{
         fprintf(stderr, "Error in nc_zeros: type %s is not supported!\n", type);
-        goto error;
-    }DATA_TABLE[data_count++] = arr->data;
+        exit(EXIT_FAILURE);
+    }
 
+    arr->shared = 0;
+    arr->data_idx = pop_from_nc_data();
+    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    DATA_TABLE[arr->data_idx] = arr->data;
+    data_count++;
 
     return arr;
-
-error:
-    nc_collect();
-    exit(EXIT_FAILURE);
 }
 
 NCarray nc_ones(const char* type, int ndim, ...){
@@ -56,7 +58,7 @@ NCarray nc_ones(const char* type, int ndim, ...){
     NCarray arr = nc_init_array();
     if(arr == NULL){
         fprintf(stderr, "Error in nc_ones: Could not allocate new NCarray!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     //Set the type of the struct
@@ -68,7 +70,7 @@ NCarray nc_ones(const char* type, int ndim, ...){
 
     if(ndim <= 0){
         fprintf(stderr, "Error in nc_ones: ndim must be greater than 0!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
     arr->ndim = ndim;
     arr->length = 1;
@@ -92,14 +94,16 @@ NCarray nc_ones(const char* type, int ndim, ...){
         }
     }else{
         fprintf(stderr, "Error in nc_ones: type %s is not supported!\n", type);
-        goto error;
-    }DATA_TABLE[data_count++] = arr->data;
+        exit(EXIT_FAILURE);
+    }
+
+    arr->shared = 0;
+    arr->data_idx = pop_from_nc_data();
+    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    DATA_TABLE[arr->data_idx] = arr->data;
+    data_count++;
 
     return arr;
-
-error:
-    nc_collect();
-    exit(EXIT_FAILURE);
 }
 
 NCarray nc_arange(const char* type, int start, int stop, int step){
@@ -107,7 +111,7 @@ NCarray nc_arange(const char* type, int start, int stop, int step){
     NCarray arr = nc_init_array();
     if(arr == NULL){
         fprintf(stderr, "Error in nc_arange: Could not allocate new NCarray!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     //Set the type of the struct
@@ -132,14 +136,16 @@ NCarray nc_arange(const char* type, int start, int stop, int step){
         }
     }else{
         fprintf(stderr, "Error in nc_arange: type %s is not supported!\n", type);
-        goto error;
-    }DATA_TABLE[data_count++] = arr->data;
+        exit(EXIT_FAILURE);
+    }
+
+    arr->shared = 0;
+    arr->data_idx = pop_from_nc_data();
+    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    DATA_TABLE[arr->data_idx] = arr->data;
+    data_count++;
 
     return arr;
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }
 
 NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
@@ -147,7 +153,7 @@ NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
     NCarray arr = nc_init_array();
     if(arr == NULL){
         fprintf(stderr, "Error in nc_fill: Could not allocate new NCarray!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
 
     //Set the type of the struct
@@ -159,7 +165,7 @@ NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
 
     if(ndim <= 0){
         fprintf(stderr, "Error in nc_fill: ndim must be greater than 0!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
     arr->ndim = ndim;
     arr->length = 1;
@@ -183,32 +189,34 @@ NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
         }
     }else{
         fprintf(stderr, "Error in nc_fill: type %s is not supported!\n", type);
-        goto error;
-    }DATA_TABLE[data_count++] = arr->data;
+        exit(EXIT_FAILURE);
+    }
+
+    arr->shared = 0;
+    arr->data_idx = pop_from_nc_data();
+    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    DATA_TABLE[arr->data_idx] = arr->data;
+    data_count++;
 
     return arr;
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }
 
 NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...){ 
     // Check for valid input array
     if(arr == NULL){
         fprintf(stderr, "Error in nc_reshape: The input array is NULL!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
     //Init memory for the NCarray
     NCarray new_arr = nc_init_array();
     if(new_arr == NULL){
         fprintf(stderr, "Error in nc_reshape: Could not allocate new NCarray!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }strncpy(new_arr->type, arr->type, MAX_TYPE_LEN);
     // Check for valid new dimension
     if(new_shape_dim <= 0){
         fprintf(stderr, "Error in nc_reshape: new_shape_dim must be greater than 0!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }new_arr->ndim = new_shape_dim;
 
     // Check for valid new length
@@ -231,7 +239,7 @@ NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...){
             if(i < new_shape_dim - 1) fprintf(stderr, ", ");
         }
         fprintf(stderr, ")!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }new_arr->length = new_length;
 
     // Set the new shape
@@ -244,24 +252,23 @@ NCarray nc_reshape(const NCarray arr, int new_shape_dim, ...){
     // Set the new data
     new_arr->data = arr->data;
 
-    return new_arr;
+    // Set the new shared flag
+    new_arr->shared = arr->shared = 1;
 
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
+    return new_arr;
 }
 
 NCarray nc_copy(NCarray src){
     // Check for valid input array
     if(src == NULL){
         fprintf(stderr, "Error in nc_copy: The input array is NULL!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }
     //Init memory for the NCarray
     NCarray dst = nc_init_array();
     if(dst == NULL){
         fprintf(stderr, "Error in nc_copy: Could not allocate new NCarray!\n");
-        goto error;
+        exit(EXIT_FAILURE);
     }strncpy(dst->type, src->type, MAX_TYPE_LEN);
 
     // Set the new length and shape
@@ -283,12 +290,14 @@ NCarray nc_copy(NCarray src){
         memcpy(dst->data, src->data, sizeof(float) * dst->length);
     }else{
         fprintf(stderr, "Error in nc_copy: type %s is not supported!\n", dst->type);
-        goto error;
-    }DATA_TABLE[data_count++] = dst->data;
+        exit(EXIT_FAILURE);
+    }
+
+    dst->shared = 0;
+    dst->data_idx = pop_from_nc_data();
+    (dst->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = dst->data_idx : 0;
+    DATA_TABLE[dst->data_idx] = dst->data;
+    data_count++;
 
     return dst;
-
-    error:
-        nc_collect();
-        exit(EXIT_FAILURE);
 }
