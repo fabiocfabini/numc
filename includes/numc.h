@@ -9,7 +9,7 @@
 
 
 #define MAX_TYPE_LEN 5
-#define MAX_ARRAYS 10
+#define MAX_ARRAYS 10 // Change this to increase the number of arrays that can be created
 
 #define NC_INT "i32"
 #define NC_FLOAT "f32"
