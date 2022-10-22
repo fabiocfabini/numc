@@ -96,12 +96,12 @@ test: tests
 # Memory rules #############################
 ############################################
 memcheck-build: build
-	@echo "$(BLUE)Running program with valgrind:$(NC)"
+	@echo "$(BLUE)Running program with:$(YELLOW) valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(RUN_BIN)$(NC)"
 	@valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(RUN_BIN)
 	@echo "$(GREEN)Program finished!\n$(NC)"
 
 memcheck-tests: tests
-	@echo "$(BLUE)Running program with valgrind:$(NC)"
+	@echo "$(BLUE)Running program with:$(YELLOW) valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(TEST_BIN)$(NC)"
 	@valgrind -q --leak-check=full --show-leak-kinds=all ./$(BIN_DIR)/$(TEST_BIN)
 	@echo "$(GREEN)Program finished!\n$(NC)"
 
