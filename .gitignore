@@ -7,3 +7,6 @@
 # Executables and build artifacts
 bin/
 build/
+
+# numpy comparison files
+*.npy

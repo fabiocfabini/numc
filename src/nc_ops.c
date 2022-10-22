@@ -11,7 +11,7 @@ int nc_equal(NCarray arr1, NCarray arr2){
 
     // Check for valid arrays
     if(arr1 == NULL || arr2 == NULL){
-        fprintf(stderr, "Error in nc_equal: One of the arrays is NULL! &arr1 = %p, &arr2 = %p\n", arr1, arr2);
+        fprintf(stderr, "Error in nc_equal: One of the arrays is NULL! &arr1 = %p, &arr2 = %p\n", (void*)arr1, (void*)arr2);
         exit(EXIT_FAILURE);
     }
 
