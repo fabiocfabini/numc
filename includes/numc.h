@@ -39,14 +39,22 @@ typedef struct list{
 }*List;
 
 
-extern int RUNNING;
-extern List GLOBAL_HEAD;
-extern int TOTAL_NC_STRUCTS_CREATED;
-extern int TOTAL_ARRAYS_CREATED;
-extern size_t nc_count;
-extern size_t data_count;
-extern NCarray NC_TABLE[MAX_ARRAYS];
-extern void* DATA_TABLE[MAX_ARRAYS];
+typedef struct globals{
+    List HEAD;
+
+    int TOTAL_NC_STRUCTS_CREATED;
+    int TOTAL_ARRAYS_CREATED;
+
+    NCarray NC_TABLE[MAX_ARRAYS];
+    unsigned int nc_count;
+
+    void* DATA_TABLE[MAX_ARRAYS];
+    unsigned int data_count;
+}*GLOBALS;
+
+extern char RUNNING;
+extern GLOBALS GLOBAL;
+
 
 /**
  * @brief Adds a free index of NC_TABLE to the GLOBAL_HEAD list 

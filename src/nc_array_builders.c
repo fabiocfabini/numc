@@ -45,10 +45,10 @@ NCarray nc_zeros(const char* type, int ndim, ...){
 
     arr->shared = 0;
     arr->data_idx = pop_from_nc_data();
-    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
-    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
-    DATA_TABLE[arr->data_idx] = arr->data;
-    data_count++;
+    (arr->data_idx > GLOBAL->TOTAL_ARRAYS_CREATED)? GLOBAL->TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    (arr->data_idx > GLOBAL->TOTAL_ARRAYS_CREATED)? GLOBAL->TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    GLOBAL->DATA_TABLE[arr->data_idx] = arr->data;
+    GLOBAL->data_count++;
 
     return arr;
 }
@@ -99,9 +99,9 @@ NCarray nc_ones(const char* type, int ndim, ...){
 
     arr->shared = 0;
     arr->data_idx = pop_from_nc_data();
-    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
-    DATA_TABLE[arr->data_idx] = arr->data;
-    data_count++;
+    (arr->data_idx > GLOBAL->TOTAL_ARRAYS_CREATED)? GLOBAL->TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    GLOBAL->DATA_TABLE[arr->data_idx] = arr->data;
+    GLOBAL->data_count++;
 
     return arr;
 }
@@ -141,9 +141,9 @@ NCarray nc_arange(const char* type, int start, int stop, int step){
 
     arr->shared = 0;
     arr->data_idx = pop_from_nc_data();
-    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
-    DATA_TABLE[arr->data_idx] = arr->data;
-    data_count++;
+    (arr->data_idx > GLOBAL->TOTAL_ARRAYS_CREATED)? GLOBAL->TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    GLOBAL->DATA_TABLE[arr->data_idx] = arr->data;
+    GLOBAL->data_count++;
 
     return arr;
 }
@@ -194,9 +194,9 @@ NCarray nc_fill(const char* type, void* fill_value, int ndim, ...){
 
     arr->shared = 0;
     arr->data_idx = pop_from_nc_data();
-    (arr->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
-    DATA_TABLE[arr->data_idx] = arr->data;
-    data_count++;
+    (arr->data_idx > GLOBAL->TOTAL_ARRAYS_CREATED)? GLOBAL->TOTAL_ARRAYS_CREATED = arr->data_idx : 0;
+    GLOBAL->DATA_TABLE[arr->data_idx] = arr->data;
+    GLOBAL->data_count++;
 
     return arr;
 }
@@ -295,9 +295,9 @@ NCarray nc_copy(NCarray src){
 
     dst->shared = 0;
     dst->data_idx = pop_from_nc_data();
-    (dst->data_idx > TOTAL_ARRAYS_CREATED)? TOTAL_ARRAYS_CREATED = dst->data_idx : 0;
-    DATA_TABLE[dst->data_idx] = dst->data;
-    data_count++;
+    (dst->data_idx > GLOBAL->TOTAL_ARRAYS_CREATED)? GLOBAL->TOTAL_ARRAYS_CREATED = dst->data_idx : 0;
+    GLOBAL->DATA_TABLE[dst->data_idx] = dst->data;
+    GLOBAL->data_count++;
 
     return dst;
 }

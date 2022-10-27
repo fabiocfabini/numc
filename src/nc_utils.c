@@ -132,11 +132,11 @@ NCarray nc_load(const char* filename){
     fread(arr->data, nc_sizeof(arr->type), arr->length, file);
     fclose(file);
 
-    TOTAL_ARRAYS_CREATED++;
+    GLOBAL->TOTAL_ARRAYS_CREATED++;
     arr->shared = 0;
     arr->data_idx = pop_from_nc_data();
-    DATA_TABLE[arr->data_idx] = arr->data;
-    data_count++;
+    GLOBAL->DATA_TABLE[arr->data_idx] = arr->data;
+    GLOBAL->data_count++;
     return arr;
 
     error:
