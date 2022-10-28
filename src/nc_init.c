@@ -79,7 +79,8 @@ void nc_init_globals(){
 
     for (int i = 0; i < MAX_ARRAYS; i++){
         GLOBAL->NC_TABLE[i] = NULL;
-        GLOBAL->DATA_TABLE[i] = NULL;
+        GLOBAL->DATA_TABLE[i].data = NULL;
+        GLOBAL->DATA_TABLE[i].ref_count = 0;
     }
     GLOBAL->nc_count = GLOBAL->data_count = 0;
     GLOBAL->TOTAL_NC_STRUCTS_CREATED = -1;
@@ -88,48 +89,53 @@ void nc_init_globals(){
     nc_init_global_head();
 }
 
-void nc_free_array(NCarray arr){
-    assert(arr != NULL && "NCarray to free is NULL");
+void nc_free_array(NCarray* arr){
+    assert(*arr != NULL && "NCarray to free is NULL");
 
     // Free the shape
-    if(arr->shape != NULL){
-        free(arr->shape);
+    if((*arr)->shape != NULL){
+        free((*arr)->shape);
     }
-    //TODO: Freeing an unshared array should decrease the ref count of the data
-    // Free the data if it not shared by another NCarray
-    if(!arr->shared){
-        int idx = arr->data_idx;
-        free(arr->data);
-        GLOBAL->DATA_TABLE[idx] = NULL;
+    if(GLOBAL->DATA_TABLE[(*arr)->data_idx].ref_count == 1){
+        int idx = (*arr)->data_idx;
+        free((*arr)->data);
+        GLOBAL->DATA_TABLE[idx].data = NULL;
+        GLOBAL->DATA_TABLE[idx].ref_count = 0;
         GLOBAL->data_count--;
         add_to_nc_data(idx);
-    }
-    int idx = arr->nc_idx;
-    free(arr);
+    }else GLOBAL->DATA_TABLE[(*arr)->data_idx].ref_count--;
+    int idx = (*arr)->nc_idx;
+    free(*arr);
+    *arr = NULL;
     GLOBAL->NC_TABLE[idx] = NULL;
     GLOBAL->nc_count--;
     add_to_nc_head(idx);
 }
 
 void nc_collect(){
-    for(int i = 0; i <= GLOBAL->TOTAL_ARRAYS_CREATED; i++){
-        if(GLOBAL->DATA_TABLE[i] != NULL){
-            free(GLOBAL->DATA_TABLE[i]);
-            GLOBAL->data_count--;
-        }
-    }GLOBAL->TOTAL_ARRAYS_CREATED = -1;
-
-    for (int i = 0; i <= GLOBAL->TOTAL_NC_STRUCTS_CREATED; i++){
-        if(GLOBAL->NC_TABLE[i] != NULL){
-            if(GLOBAL->NC_TABLE[i]->shape != NULL){
-                free(GLOBAL->NC_TABLE[i]->shape);
+    if(!FREED){ 
+        for(int i = 0; i <= GLOBAL->TOTAL_ARRAYS_CREATED; i++){
+            if(GLOBAL->DATA_TABLE[i].ref_count != 0){
+                free(GLOBAL->DATA_TABLE[i].data);
+                GLOBAL->DATA_TABLE[i].ref_count = 0;
+                GLOBAL->data_count--;
             }
-            free(GLOBAL->NC_TABLE[i]);
-            GLOBAL->nc_count--;
-        }
-    }GLOBAL->TOTAL_NC_STRUCTS_CREATED = -1;
+        }GLOBAL->TOTAL_ARRAYS_CREATED = -1;
 
-    nc_free_globals();
+        for (int i = 0; i <= GLOBAL->TOTAL_NC_STRUCTS_CREATED; i++){
+            if(GLOBAL->NC_TABLE[i] != NULL){
+                if(GLOBAL->NC_TABLE[i]->shape != NULL){
+                    free(GLOBAL->NC_TABLE[i]->shape);
+                }
+                free(GLOBAL->NC_TABLE[i]);
+                GLOBAL->NC_TABLE[i] = NULL;
+                GLOBAL->nc_count--;
+            }
+        }GLOBAL->TOTAL_NC_STRUCTS_CREATED = -1;
+
+        nc_free_globals();
+        FREED = 1;
+    }
 }
 
 NCarray nc_init_array(){
@@ -139,7 +145,7 @@ NCarray nc_init_array(){
     // If the global head is not initialized, initialize it
     if(!RUNNING){
         RUNNING = 1; atexit(nc_collect);
-        nc_init_globals(); //TODO: Implement this and support for GLOBALS struct
+        nc_init_globals();
     }
 
     // Set default values

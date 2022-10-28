@@ -38,6 +38,10 @@ typedef struct list{
     Node nc_data;
 }*List;
 
+typedef struct nc_data{
+    void *data;
+    int ref_count;
+}NCdata; 
 
 typedef struct globals{
     List HEAD;
@@ -48,11 +52,12 @@ typedef struct globals{
     NCarray NC_TABLE[MAX_ARRAYS];
     unsigned int nc_count;
 
-    void* DATA_TABLE[MAX_ARRAYS];
+    NCdata DATA_TABLE[MAX_ARRAYS];
     unsigned int data_count;
 }*GLOBALS;
 
 extern char RUNNING;
+extern char FREED;
 extern GLOBALS GLOBAL;
 
 
@@ -87,9 +92,9 @@ int pop_from_nc_data();
 /**
  * @brief Frees the memory allocated for an NCarray
  * 
- * @param arr The NCarray to free
+ * @param arr Pointer to NCarray to free
  */
-void nc_free_array(NCarray arr);
+void nc_free_array(NCarray* arr);
 
 /**
  * @brief Frees the memory allocated for all NCarrays.
@@ -165,6 +170,16 @@ NCarray nc_fill(const char* type, void* fill_value, int ndim, ...);
  * @return NCarray ranging [start, stop, step]
  */
 NCarray nc_arange(const char* type, int start, int stop, int step);
+
+/**
+ * @brief Transposes an NCarray.
+ * 
+ * @param arr The NCarray to transpose
+ * @param axis Indicates the order of how the axis are permuted. If NULL, the axis are reversed
+ * @param size The size of the axis array. Must be arr->ndim
+ * @return The transposed array
+ */
+NCarray nc_transpose(NCarray arr, int* axis, int size);
 
 /**
  * @brief Reshapes an NCarray maintaining the same data

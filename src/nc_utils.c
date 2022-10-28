@@ -135,7 +135,7 @@ NCarray nc_load(const char* filename){
     GLOBAL->TOTAL_ARRAYS_CREATED++;
     arr->shared = 0;
     arr->data_idx = pop_from_nc_data();
-    GLOBAL->DATA_TABLE[arr->data_idx] = arr->data;
+    GLOBAL->DATA_TABLE[arr->data_idx].data = arr->data;
     GLOBAL->data_count++;
     return arr;
 
