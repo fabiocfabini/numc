@@ -182,6 +182,17 @@ NCarray nc_arange(const char* type, int start, int stop, int step);
 NCarray nc_transpose(NCarray arr, int* axis, int size);
 
 /**
+ * @brief Creates a concatenation of the given NCarrays
+ * 
+ * @param nc_arrays The array of NCarrays to concatenate
+ * @param count The number of NCarrays to concatenate
+ * @param axis The axis to concatenate along
+ * @param size The size of the axis array. Must 
+ * @return The reshaped array
+ *///TODO: IMLPLEMENT NC_CONCAT
+NCarray nc_concat(NCarray* nc_arrays, int count, int axis, int size);
+
+/**
  * @brief Reshapes an NCarray maintaining the same data
  * 
  * @param arr The NCarray to reshape

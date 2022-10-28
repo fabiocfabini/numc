@@ -20,7 +20,7 @@ int main(){
 
     return 0;
 }
-
+//NOTE: AFTER CONCAT WORK ON TEST SUITE
 //NOTE: Testing system could probably be improved by using a testing framework or by using Python to run the tests
 // int main(){
 //     int total = 0;
