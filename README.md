@@ -4,8 +4,7 @@ Just like NumPy, but in C. This library is still in development, and is not yet 
 
 ## Goals
 
-- [ ] Create a library that is as easy(as possible) to use as NumPy
-- [ ] Make it static or dynamickly linked
+- [ ] Create a library that is as easy (as possible) to use as NumPy
 - [ ] Basic building blocks
   - [x] Creation of arrays of any shape, type, and size
   - [x] Loading and saving arrays to disk

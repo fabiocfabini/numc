@@ -9,4 +9,5 @@ bin/
 build/
 
 # numpy comparison files
-*.npy
+*.*py
+*.ipynb
