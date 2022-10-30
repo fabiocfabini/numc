@@ -21,7 +21,6 @@
 
 //NOTE: Discuss if having seperate structs for each type is better
 typedef struct nc_array{
-    unsigned int shared: 1;
     void* data;
     int length, ndim, data_idx, nc_idx;
     int *shape;
@@ -129,6 +128,7 @@ int nc_equal(NCarray arr1, NCarray arr2);
  */
 void nc_show(NCarray arr, int width, int precision);
 
+//TODO: MAKE The parameter shape be a pointer to an array of ints instead using a variable number of arguments
 /**
  * @brief Creates an NCarray with a given shape and type and fills it with 0s
  * 
@@ -186,11 +186,10 @@ NCarray nc_transpose(NCarray arr, int* axis, int size);
  * 
  * @param nc_arrays The array of NCarrays to concatenate
  * @param count The number of NCarrays to concatenate
- * @param axis The axis to concatenate along
- * @param size The size of the axis array. Must 
+ * @param axis The axis to concatenate along. if <0, the arrays are flattened before concatenation
  * @return The reshaped array
- *///TODO: IMLPLEMENT NC_CONCAT
-NCarray nc_concat(NCarray* nc_arrays, int count, int axis, int size);
+ */
+NCarray nc_concat(NCarray* nc_arrays, int count, int axis);
 
 /**
  * @brief Reshapes an NCarray maintaining the same data
